@@ -1,4 +1,4 @@
-"""Python script to create html page for query result (of questions in bincom interview test)"""
+"""Python script that creates html page for query result (of questions in bincom interview test)"""
 
 
 from config_db import create_db_connection, execute_query, read_query
@@ -27,27 +27,32 @@ def create_html_page(connection, query, html_page):
         print(f"{html_page} Created")
 
 
-QUERY_1 = """
-SELECT p.polling_unit_name, a.* 
-FROM announced_pu_results a
-JOIN polling_unit p 
-ON a.polling_unit_uniqueid = p.uniqueid
-WHERE a.polling_unit_uniqueid = 9;
-"""
+if __name__ == "__main__":
 
-QUERY_2 = """
-SELECT l.lga_name,p.polling_unit_name, SUM(a.party_score) summed_total
-FROM lga l
-JOIN polling_unit p
-ON l.lga_id = p.lga_id
-JOIN announced_pu_results a
-ON a.polling_unit_uniqueid = p.uniqueid
-WHERE l.lga_id = 35
-GROUP BY 1,2;
-"""
+    QUERY_1 = """
+	SELECT p.polling_unit_name, a.* 
+	FROM announced_pu_results a
+	JOIN polling_unit p ON a.polling_unit_uniqueid = p.uniqueid
+	WHERE a.polling_unit_uniqueid = 9;
+	"""
 
-PASSWORD = "root"
-db_connection = create_db_connection("localhost", "root", PASSWORD, "bincom_test")
+    QUERY_2 = """
+	SELECT l.lga_id, l.lga_name, SUM(a.party_score) summed_total
+	FROM lga l
+	JOIN polling_unit p ON l.lga_id = p.lga_id
+	JOIN announced_pu_results a ON a.polling_unit_uniqueid = p.uniqueid
+	GROUP BY 1,2;
+	"""
 
-create_html_page(db_connection, QUERY_1, "solutions/solution_1.html")
-create_html_page(db_connection, QUERY_2, "solutions/solution_2.html")
+    QUERY_3 = """
+	SELECT party_abbreviation, SUM(party_score)  result
+	FROM announced_pu_results
+	GROUP BY 1;
+	"""
+
+    PASSWORD = "root"
+    db_connection = create_db_connection("localhost", "root", PASSWORD, "bincom_test")
+
+    create_html_page(db_connection, QUERY_1, "solution_pages/solution_1.html")
+    create_html_page(db_connection, QUERY_2, "solution_pages/solution_2.html")
+    create_html_page(db_connection, QUERY_3, "solution_pages/solution_3.html")
